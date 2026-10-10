@@ -4,7 +4,7 @@
 /* ---------- Estado ---------- */
 const emptyState = () => ({
   stage:1, busy:null, err:null,
-  prioridad:"", q:{resultado:"",importa:"",problema:""},
+  prioridad:"", q:{importa:""},
   fb1:null, fb1Done:false,
   ppt:{prioridad:"",empresa:"",clientes:"",resultados:"",area:"",decisiones:"",conductas:""},
   fb2:null,
@@ -15,6 +15,7 @@ let S = emptyState();
 
 /* ---------- Utilidades ---------- */
 const $ = s => document.querySelector(s);
+const nz = v => (v && String(v).trim()) ? v : "(sin completar)";
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const getPath = (o,p) => p.split(".").reduce((a,k)=>a?.[k],o);
 const setPath = (o,p,v) => { const ks=p.split("."); const last=ks.pop(); ks.reduce((a,k)=>a[k],o)[last]=v; };
@@ -52,20 +53,20 @@ const busyBtn = (id,label,cls="") => `<button class="btn ${cls}" data-act="${id}
 const BASE = `Eres parte de una app de entrenamiento para subgerentes de una empresa chilena. Escribe en español de Chile, tuteando, de forma directa y concreta. Responde ÚNICAMENTE con un objeto JSON válido, sin markdown ni texto adicional. Regla de oro: nunca inventes políticas, atribuciones, montos, indicadores ni procedimientos de la empresa; si algo no está en la información entregada, dilo explícitamente.`;
 
 function defText(){
-  return `PRIORIDAD ESTRATÉGICA: ${S.prioridad}\n- Resultado específico buscado: ${S.q.resultado}\n- Por qué es importante: ${S.q.importa}\n- Problema que se intenta resolver: ${S.q.problema}`;
+  return `PRIORIDAD ESTRATÉGICA Y RESULTADO BUSCADO: ${nz(S.prioridad)}\n- Por qué es importante para la empresa y cómo ayuda: ${nz(S.q.importa)}`;
 }
 function pptText(){
   const p=S.ppt;
   return `MENSAJE PPT PARA LAS JEFATURAS
-Diapositiva 1 · PRIORIDAD (qué necesitamos lograr, foco principal): ${p.prioridad}
+Diapositiva 1 · PRIORIDAD (qué necesitamos lograr, foco principal): ${nz(p.prioridad)}
 Diapositiva 2 · PROPÓSITO
-- Impacto en la empresa: ${p.empresa}
-- Impacto en clientes: ${p.clientes}
-- Impacto en resultados: ${p.resultados}
+- Impacto en la empresa: ${nz(p.empresa)}
+- Impacto en clientes: ${nz(p.clientes)}
+- Impacto en resultados: ${nz(p.resultados)}
 Diapositiva 3 · TRADUCCIÓN A DECISIONES Y CONDUCTAS
-- Qué significa para nuestra área: ${p.area}
-- Qué priorizaremos y decidiremos (criterios y decisiones): ${p.decisiones}
-- Qué haremos diferente y qué dejaremos de hacer: ${p.conductas}`;
+- Qué significa para nuestra área: ${nz(p.area)}
+- Qué priorizaremos y decidiremos (criterios y decisiones): ${nz(p.decisiones)}
+- Qué haremos diferente y qué dejaremos de hacer: ${nz(p.conductas)}`;
 }
 
 /* ---------- Navegación ---------- */
@@ -339,15 +340,9 @@ document.addEventListener("click",e=>{
   if(!b||b.disabled||S.busy) return;
   const a=b.dataset.act;
   if(a==="check1") run("check1",check1);
-  else if(a==="to2"){
-    if(![S.prioridad,S.q.resultado,S.q.importa,S.q.problema].every(x=>x.trim())){ S.err="Completa la prioridad y las tres preguntas para continuar."; render(); window.scrollTo({top:0}); }
-    else go(2);
-  }
+  else if(a==="to2") go(2);
   else if(a==="check2") run("check2",check2);
-  else if(a==="to3"){
-    if(Object.values(S.ppt).some(x=>!x.trim())){ S.err="Completa todos los campos del mensaje PPT para continuar."; render(); window.scrollTo({top:0}); }
-    else go(3);
-  }
+  else if(a==="to3") go(3);
   else if(a==="regen") run("regen",genCase);
   else if(a.startsWith("test:")) run(a,()=>runTest(a.slice(5)));
   else if(a==="eval") run("eval",async()=>{ await evaluate(); S.stage=4; });
