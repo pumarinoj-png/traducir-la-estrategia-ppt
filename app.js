@@ -6,7 +6,7 @@ const emptyState = () => ({
   stage:1, busy:null, err:null,
   prioridad:"", q:{resultado:"",importa:"",problema:""},
   fb1:null, fb1Done:false,
-  ppt:{prioridad:"",empresa:"",clientes:"",resultados:"",area:"",priorizaremos:"",decidiremos:"",haremos:"",dejaremos:""},
+  ppt:{prioridad:"",empresa:"",clientes:"",resultados:"",area:"",decisiones:"",conductas:""},
   fb2:null,
   caso:null, tests:{comp:null,dec:null,hard:null}, notes:{comp:"",dec:"",hard:""},
   ev:null
@@ -64,10 +64,8 @@ Diapositiva 2 · PROPÓSITO
 - Impacto en resultados: ${p.resultados}
 Diapositiva 3 · TRADUCCIÓN A DECISIONES Y CONDUCTAS
 - Qué significa para nuestra área: ${p.area}
-- Qué priorizaremos: ${p.priorizaremos}
-- Qué decidiremos: ${p.decidiremos}
-- Qué haremos diferente: ${p.haremos}
-- Qué dejaremos de hacer: ${p.dejaremos}`;
+- Qué priorizaremos y decidiremos (criterios y decisiones): ${p.decisiones}
+- Qué haremos diferente y qué dejaremos de hacer: ${p.conductas}`;
 }
 
 /* ---------- Navegación ---------- */
@@ -78,7 +76,7 @@ function maxReached(){
   if(S.fb2Done) m=3;
   if(Object.values(S.tests).some(Boolean)) m=3;
   if(S.ev) m=4;
-  return Math.max(m,S.stage);
+  return Math.max(m,S.stage,S.maxStage||1);
 }
 function renderSteps(){
   const mr=maxReached();
@@ -87,7 +85,7 @@ function renderSteps(){
     return `<button class="step ${cls}" data-go="${n}" ${n<=mr?"":"disabled"}><span class="n">${n===S.stage||n>mr?n:"✓"}</span><span class="t">${t}</span></button>`;
   }).join("");
 }
-function go(n){ S.stage=n; S.err=null; render(); window.scrollTo({top:0}); }
+function go(n){ S.stage=n; S.maxStage=Math.max(S.maxStage||1,n); S.err=null; render(); window.scrollTo({top:0}); }
 
 /* ---------- Etapa 1: Definir ---------- */
 function fbBox(o){
@@ -108,9 +106,8 @@ function viewDefine(){
     ${field("¿Por qué esto es importante para la empresa?","Qué pasa si lo logramos y qué pasa si no.","q.importa",3,fbBox(f.importa))}
     ${field("¿Qué problema estamos intentando resolver?","Describe la situación actual que no queremos que continúe.","q.problema",3,fbBox(f.problema))}
     <div class="actions">
-      ${busyBtn("check1", S.fb1?"Revisar de nuevo":"Revisar mi definición")}
-      ${allOk?`<button class="btn" data-act="to2">Continuar a Traducir →</button>`:""}
-      ${S.fb1&&!allOk?`<button class="btn ghost" data-act="to2">Continuar de todos modos</button>`:""}
+      <button class="btn" data-act="to2" ${S.busy?"disabled":""}>Continuar a Traducir →</button>
+      ${busyBtn("check1", S.fb1?"Revisar de nuevo con IA":"Revisar con IA (opcional)","ghost")}
     </div>
   </div>`;
 }
@@ -158,15 +155,13 @@ function viewTranslate(){
 
     <div class="slide"><div class="sh"><h3>3. Traducción a decisiones y conductas</h3><span>Diapositiva 3</span></div><div class="sb">
       ${field("¿Qué significa esto para nuestra área?","","ppt.area",2,fb2Box(f.area))}
-      ${field("¿Qué priorizaremos?","Criterios de orden: qué va antes que qué.","ppt.priorizaremos",3,fb2Box(f.priorizaremos))}
-      ${field("¿Qué decidiremos?","Decisiones que la jefatura podrá tomar y bajo qué criterio.","ppt.decidiremos",3,fb2Box(f.decidiremos))}
-      ${field("¿Qué haremos diferente?","Conductas que alguien podría ver o verificar.","ppt.haremos",3,fb2Box(f.haremos))}
-      ${field("¿Qué dejaremos de hacer?","","ppt.dejaremos",3,fb2Box(f.dejaremos))}
+      ${field("¿Qué priorizaremos y qué decidiremos?","Qué va antes que qué, y qué decisiones podrá tomar la jefatura y bajo qué criterio.","ppt.decisiones",4,fb2Box(f.decisiones))}
+      ${field("¿Qué haremos diferente y qué dejaremos de hacer?","Conductas concretas que alguien podría ver o verificar, y lo que dejaremos de hacer.","ppt.conductas",4,fb2Box(f.conductas))}
     </div></div>
 
     <div class="actions">
-      ${busyBtn("check2", S.fb2Done?"Revisar de nuevo":"Revisar mi traducción")}
-      ${S.fb2Done?`<button class="btn" data-act="to3">Continuar a Simular →</button>`:""}
+      <button class="btn" data-act="to3" ${S.busy?"disabled":""}>Continuar a Simular →</button>
+      ${busyBtn("check2", S.fb2Done?"Revisar de nuevo con IA":"Revisar con IA (opcional)","ghost")}
       <button class="btn ghost" data-go="1">← Volver a Definir</button>
     </div>
   </div>`;
@@ -187,7 +182,7 @@ ${defText()}
 
 ${pptText()}
 
-Formato: {"observable":bool (true solo si priorizaremos, decidiremos, haremos y dejaremos son observables),"resumen":"2 o 3 frases con la lectura general, incluyendo coherencia con la definición","campos":{"prioridad":{"nivel":"","comentario":"","sugerencia":""},"proposito":{...},"area":{...},"priorizaremos":{...},"decidiremos":{...},"haremos":{...},"dejaremos":{...}}}`;
+Formato: {"observable":bool (true solo si "decisiones" y "conductas" son observables; en "conductas" debe quedar claro también qué se dejará de hacer),"resumen":"2 o 3 frases con la lectura general, incluyendo coherencia con la definición","campos":{"prioridad":{"nivel":"","comentario":"","sugerencia":""},"proposito":{...},"area":{...},"decisiones":{...},"conductas":{...}}}`;
   S.fb2 = await ai(p); S.fb2Done=true;
 }
 
@@ -346,9 +341,15 @@ document.addEventListener("click",e=>{
   if(!b||b.disabled||S.busy) return;
   const a=b.dataset.act;
   if(a==="check1") run("check1",check1);
-  else if(a==="to2") go(2);
+  else if(a==="to2"){
+    if(![S.prioridad,S.q.resultado,S.q.importa,S.q.problema].every(x=>x.trim())){ S.err="Completa la prioridad y las tres preguntas para continuar."; render(); window.scrollTo({top:0}); }
+    else go(2);
+  }
   else if(a==="check2") run("check2",check2);
-  else if(a==="to3"){ go(3); }
+  else if(a==="to3"){
+    if(Object.values(S.ppt).some(x=>!x.trim())){ S.err="Completa todos los campos del mensaje PPT para continuar."; render(); window.scrollTo({top:0}); }
+    else go(3);
+  }
   else if(a==="regen") run("regen",genCase);
   else if(a.startsWith("test:")) run(a,()=>runTest(a.slice(5)));
   else if(a==="eval") run("eval",async()=>{ await evaluate(); S.stage=4; });
