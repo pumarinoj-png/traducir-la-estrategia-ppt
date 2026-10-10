@@ -101,10 +101,8 @@ function viewDefine(){
   return `<div class="card">
     <h2>1 · Define qué quieres que comprendan tus jefaturas</h2>
     <p class="lead">Ingresa una prioridad estratégica real de la empresa y responde tres preguntas. Si las respuestas son demasiado generales, te voy a pedir más precisión.</p>
-    ${field("¿Cuál es la prioridad estratégica?","Una prioridad real que hoy necesitas que tu equipo de jefaturas lleve a la práctica.","prioridad",2,fbBox(f.prioridad))}
-    ${field("¿Qué resultado específico buscamos conseguir?","Piensa en qué cambiaría de forma medible o verificable, y para cuándo.","q.resultado",3,fbBox(f.resultado))}
-    ${field("¿Por qué esto es importante para la empresa?","Qué pasa si lo logramos y qué pasa si no.","q.importa",3,fbBox(f.importa))}
-    ${field("¿Qué problema estamos intentando resolver?","Describe la situación actual que no queremos que continúe.","q.problema",3,fbBox(f.problema))}
+    ${field("¿Cuál es la prioridad estratégica, qué resultado buscamos conseguir?","Una prioridad real que hoy necesitas que tu equipo de jefaturas lleve a la práctica.","prioridad",2,fbBox(f.prioridad))}
+    ${field("¿Por qué esto es importante para la empresa, cómo nos ayuda?","Qué pasa si lo logramos y qué pasa si no.","q.importa",3,fbBox(f.importa))}
     <div class="actions">
       <button class="btn" data-act="to2" ${S.busy?"disabled":""}>Continuar a Traducir →</button>
       ${busyBtn("check1", S.fb1?"Revisar de nuevo con IA":"Revisar con IA (opcional)","ghost")}
