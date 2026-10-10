@@ -111,7 +111,7 @@ function viewDefine(){
 }
 async function check1(){
   const{prioridad,q}=S;
-  if(![prioridad,q.resultado,q.importa,q.problema].every(x=>x.trim().length>0)){ S.err="Completa la prioridad y las tres preguntas antes de revisar."; return; }
+  if(![prioridad,q.importa].every(x=>x.trim().length>0)){ S.err="Completa la prioridad y las dos preguntas antes de revisar."; return; }
   const p = `${BASE}
 
 Evalúa la precisión de lo que escribió un subgerente al definir una prioridad estratégica. Una respuesta es GENERAL (ok=false) si podría aplicarse a casi cualquier empresa o área, usa fórmulas vacías ("mejorar el servicio", "ser más eficientes", "agregar valor", "optimizar procesos") o no indica algo concreto como un resultado observable, un segmento, un proceso, un plazo o un indicador. Es suficientemente precisa (ok=true) si un tercero podría saber qué se busca y reconocer cuándo se logró.
@@ -120,7 +120,7 @@ Para cada campo entrega "desafio": si ok=false, cuestiona con respeto pero con f
 
 ${defText()}
 
-Formato: {"prioridad":{"ok":bool,"desafio":""},"resultado":{"ok":bool,"desafio":""},"importa":{"ok":bool,"desafio":""},"problema":{"ok":bool,"desafio":""}}`;
+Formato: {"prioridad":{"ok":bool,"desafio":""},"importa":{"ok":bool,"desafio":""}}`;
   const r = await ai(p);
   S.fb1=r; S.fb1Done = true;
 }
