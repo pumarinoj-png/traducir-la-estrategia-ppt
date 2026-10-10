@@ -97,10 +97,10 @@ function field(label,hint,path,rows=3,fb=""){
 }
 function viewDefine(){
   const f=S.fb1||{};
-  const allOk = S.fb1 && ["prioridad","resultado","importa","problema"].every(k=>f[k]&&f[k].ok);
+  const allOk = S.fb1 && ["prioridad","importa"].every(k=>f[k]&&f[k].ok);
   return `<div class="card">
     <h2>1 · Define qué quieres que comprendan tus jefaturas</h2>
-    <p class="lead">Ingresa una prioridad estratégica real de la empresa y responde tres preguntas. Si las respuestas son demasiado generales, te voy a pedir más precisión.</p>
+    <p class="lead">Ingresa una prioridad estratégica real de la empresa y responde dos preguntas. Si las respuestas son demasiado generales, te voy a pedir más precisión.</p>
     ${field("¿Cuál es la prioridad estratégica, qué resultado buscamos conseguir?","Una prioridad real que hoy necesitas que tu equipo de jefaturas lleve a la práctica.","prioridad",2,fbBox(f.prioridad))}
     ${field("¿Por qué esto es importante para la empresa, cómo nos ayuda?","Qué pasa si lo logramos y qué pasa si no.","q.importa",3,fbBox(f.importa))}
     <div class="actions">
