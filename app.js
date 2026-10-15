@@ -189,13 +189,13 @@ Formato: {"observable":bool (true solo si "decisiones" y "conductas" son observa
 async function genCase(){
   const p = `${BASE}
 
-Crea UN caso realista de simulación para una jefatura (por ejemplo jefe/a de área, jefe/a de equipo) que consulta a su subgerente. El caso debe poner en tensión la prioridad comunicada con otra demanda legítima del día a día, de modo que no exista una respuesta obvia y se necesiten los criterios del mensaje para decidir. Debe ser plausible para el contexto de la empresa que se infiere de la información; no inventes políticas, atribuciones ni normas internas, solo la situación operativa. Redáctalo en primera persona como lo diría la jefatura, de 3 a 6 frases, y termina con una pregunta directa al subgerente.
+Crea UN caso realista de simulación para una jefatura (por ejemplo jefe/a de área, jefe/a de equipo) que consulta a su subgerente. El caso debe poner en tensión la prioridad comunicada con otra demanda legítima del día a día, de modo que no exista una respuesta obvia y se necesiten los criterios del mensaje para decidir. NEUTRALIDAD DE RUBRO (muy importante): la empresa puede ser de cualquier sector. NO menciones ni insinúes ningún rubro, industria, producto, servicio ni proceso específico (nada de despachos, pedidos, ventas, pólizas, siniestros, corredores, pacientes, bodegas, etc.). Usa lenguaje genérico: "solicitudes", "casos", "tareas", "clientes", "plazos", "equipo". Solo puedes usar términos específicos que el propio subgerente haya escrito en su definición o en su PPT; no agregues ninguno nuevo. Si la información es escasa o está sin completar, plantea una situación abstracta pero concreta en su tensión (dos demandas legítimas que compiten por la misma capacidad del equipo). No inventes políticas, atribuciones ni normas internas. Redáctalo en primera persona como lo diría la jefatura, de 3 a 6 frases, y termina con una pregunta directa al subgerente.
 
 ${defText()}
 
 ${pptText()}
 
-Formato: {"rol":"cargo ficticio genérico de la jefatura","situacion":"texto en primera persona con la pregunta final","tension":"una frase que explique qué se está poniendo a prueba"}`;
+Formato: {"rol":"cargo genérico sin rubro, por ejemplo Jefatura de equipo","situacion":"texto en primera persona con la pregunta final","tension":"una frase que explique qué se está poniendo a prueba"}`;
   S.caso = await ai(p);
   S.tests={comp:null,dec:null,hard:null};
 }
